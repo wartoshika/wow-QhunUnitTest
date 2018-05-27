@@ -1,0 +1,14 @@
+## Interface: 70300
+## Title: QhunUnitTest |c0000ff00[Lib, AddonDevelopment]
+## Author: wartoshika <dev@qhun.de>
+## Notes: A untit test framework for my addons
+## Version: 1.0
+## DefaultState: enabled
+
+global.lua
+
+classes/suite.lua
+classes/base.lua
+classes/wrapper.lua
+
+core.lua
