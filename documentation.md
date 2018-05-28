@@ -210,7 +210,9 @@ Things to kow:
 
 # API
 
-## **`QhunUnitTest.Suite`**
+## *public* **`QhunUnitTest.Suite`**
+
+A wrapper class for test classes and methods. An addon should have at least one test suite.
 
 ### **PUBLIC FUNCTIONS**
 
@@ -262,3 +264,229 @@ Things to kow:
 
 *Parameters*:
 - classTest (required, ClassTestResultObject) - The class test result object
+
+---
+
+## *abstract* **`QhunUnitTest.Base`**
+
+The base of every test class. Provides a wide range of assert functions and a context to record assert, error and success of tests.
+
+### **PUBLIC FUNCTIONS**
+
+### ***static* QhunUnitTest.Base `new()`**
+
+*Description: Creates a new test class.*
+
+### **nil `setupClass()`**
+
+*Description: A Setup function at class level. Will be executed **once before** the first test method is executed.*
+
+### **nil `teardownClass()`**
+
+*Description: A teardown function at class level. Will be executed **once after** the last test method is executed.*
+
+### **nil `setup(methodName)`**
+
+*Description: A setup function at method level. Will be executed **before each** test method.
+
+*Parameters:*
+- methodName (required, string) - The method name of the currently executed test
+
+### **nil `teardown(methodName)`**
+
+*Description: A teardown function at method level. Will be executed **after each** test method.
+
+*Parameters:*
+- methodName (required, string) - The method name of the currently executed test
+
+---
+
+### **boolean `assertTrue(booleanValue, [message])`**
+
+*Description: Tests if the given booleanValue is of type boolean and is TRUE*
+
+*Parameters:*
+- booleanValue (required, boolean) - the boolean value to test
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertFalse(booleanValue, [message])`**
+
+*Description: Tests if the given booleanValue is of type boolean and is FALSE*
+
+*Parameters:*
+- booleanValue (required, boolean) - the boolean value to test
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertNil(value, [message])`**
+
+*Description: Tests if the given value if NIL*
+
+*Parameters:*
+- value (required, boolean) - the value to test
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertEqual(value1, value2, [message])`**
+
+*Description: Tests if the two objects are equal using == operator*
+
+*Parameters:*
+- value1 (required, any) - the first value
+- value2 (required, any) - the second value
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertNotEqual(value1, value2, [message])`**
+
+*Description: Tests if the two objects are not equal using ~= operator*
+
+*Parameters:*
+- value1 (required, any) - the first value
+- value2 (required, any) - the second value
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertTypeof(variable, expectedType, [message])`**
+
+*Description: Tests if the two objects are not equal using ~= operator. the `type()` function is used to get the type of variable*
+
+*Parameters:*
+- variable (required, any) - the value to test
+- expectedType (required, string) - the expected type of variable
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+
+### **boolean `assertClassOf(value, expectedClass, [message])`**
+
+*Description: Tests if the given value is an instance of expectedClass. Does not work for inheritance. Please use `assertDerivedFrom` if you want to test the inheritance.*
+
+*Parameters:*
+- value (required, ? extends {}) - the instantiated value
+- expectedClass (required, ? extends {}) - the expected class (not an instance of the expected class)
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertDerivedFrom(value, expectedClass, [message])`**
+
+*Description: Tests if the given value has a parent expected class.*
+
+*Parameters:*
+- value (required, ? extends {}) - the instantiated value
+- expectedClass (required, ? extends {}) - the expected class (not an instance of the expected class)
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertNumberGreaterThanEqual(variable, expectedNumber, [message])`**
+
+*Description: Tests if a given number is greater then or equal to the expected number*
+
+*Parameters:*
+- variable (required, number) - the value to test
+- expectedNumber (required, number) - the expected number
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertStringLength(variable, expectedLength, [message])`**
+
+*Description: Tests if a given string has the exact expected length*
+
+*Parameters:*
+- variable (required, string) - the string value to test
+- expectedLength (required, number) - the expected string length
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertTableSize(table, expectedSize, message)`**
+
+*Description: Tests if a given table has the exact expected size. The size test does not use `#table` because this may be incorect for non numeric keys. It uses an iteration of `pairs(table)` and a counter variable.* 
+
+*Parameters:*
+- table (required, table) - the table to test
+- expectedSize (required, number) - the expected table size
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertTableSimilar(o1, o2, [ignoreMetatable, [message]])`**
+
+*Description: Tests if the two tables have the same keys and values. They may have different links. This function can be used if the `==` operation will not work. This function will also test is the keys of the tables are at the same position!*
+
+*Parameters:*
+- o1 (required, table) - the first table
+- o2 (required, table) - the second table
+- ignoreMetatable (boolean, default true) - ignore the metatable compare check of the two objects.
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertMethodCalled(wrappedInstance, methodName, [message])`**
+
+*Description: Tests if a method was called at least one time.*
+
+*Parameters:*
+- wrappedInstance (required, `QhunUnitTest.Wrapper`) - the wrapped instance as a mock
+- methodName (required, string) - the method name that was expected to be called
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertMethodNotCalled(wrappedInstance, methodName, [message])`**
+
+*Description: Tests if a method was never called.*
+
+*Parameters:*
+- wrappedInstance (required, `QhunUnitTest.Wrapper`) - the wrapped instance as a mock
+- methodName (required, string) - the method name that was expected to be called
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertMethodCalledWith(wrappedInstance, methodName, arguments, [message])`**
+
+*Description: Tests if a method was called at lease one time with the exact given arguments.*
+
+*Parameters:*
+- wrappedInstance (required, `QhunUnitTest.Wrapper`) - the wrapped instance as a mock
+- methodName (required, string) - the method name that was expected to be called
+- arguments (required, table) - the argument stack. Argument comparison is using `assertTableSimilar` to test the arguments.
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertMethodNotCalledWith(wrappedInstance, methodName, arguments, [message])`**
+
+*Description: Tests if a method has never been called with the exact given arguments.*
+
+*Parameters:*
+- wrappedInstance (required, `QhunUnitTest.Wrapper`) - the wrapped instance as a mock
+- methodName (required, string) - the method name that was expected to be called
+- arguments (required, table) - the argument stack. Argument comparison is using `assertTableSimilar` to test the arguments.
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertMethodCalledTimes(wrappedInstance, methodName, expectedCalls, [message])`**
+
+*Description: Tests if a method was called exactly n times.*
+
+*Parameters:*
+- wrappedInstance (required, `QhunUnitTest.Wrapper`) - the wrapped instance as a mock
+- methodName (required, string) - the method name that was expected to be called
+- expectedCalls (required, number) - the expected call times value
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **boolean `assertError(callback, [arguments, [message]])`**
+
+*Description: Test if a callback function throws a lua error. Because of using `pcall` to mute the errors, you have to pass any arguments to this function or make them globally available. The current function context is lost.*
+
+*Parameters:*
+- callback (required, function) - the callback function to test if an error occurs
+- arguments (table) - the arguments for the callback function. order is preseved!
+- message (string) - an alternative message that will be printed in the test result (**instead** of the generic error message)
+
+### **PRIVATE FUNCTIONS**
+
+### nil `_assertError(message)`
+
+*Description: Increments the error counter and throw a lua error for the current error message*
+
+*Parameters:*
+- message (required, string) - the error message to store
+
+### boolean `_similarTable(o1, o2, [ignoreMetatable])`
+
+*Description: Tests if the two tables have the same keys and values. They may have different links. This function can be used if the `==` operation will not work. This function will also test is the keys of the tables are at the same position!*
+
+*Parameters:*
+- o1 (required, table) - the first table
+- o2 (required, table) - the second table
+- ignoreMetatable (boolean, default true) - ignore the metatable compare check of the two objects.
+
+---
+
+## *public* **`QhunUnitTest.Wrapper`**
+
+
+
+### **PUBLIC FUNCTIONS**
