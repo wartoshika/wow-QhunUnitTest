@@ -271,6 +271,10 @@ A wrapper class for test classes and methods. An addon should have at least one 
 
 The base of every test class. Provides a wide range of assert functions and a context to record assert, error and success of tests.
 
+Important name definition:
+- Every method name declared in this class as public or private will override the existing function.
+- If you want do make a private function in your test class, that will not be parsed as seperate test method, you must prefix your method with an underscore character. An example: `aTestMethod()`, `_notATestMethod()` 
+
 ### **PUBLIC FUNCTIONS**
 
 ### ***static* QhunUnitTest.Base `new()`**
@@ -487,6 +491,34 @@ The base of every test class. Provides a wide range of assert functions and a co
 
 ## *public* **`QhunUnitTest.Wrapper`**
 
+A class that is capable of wrapper another class and forwards every method and property call to the wrapped instance. This class records method calls and should be a base for a future mock feature of the unit test project.
 
+You should use this class when using `assertMethod*` functions.
+
+You must not define any function with a name that is present in either public or private function section. I prefixed the functions do avoid possible overrides.
 
 ### **PUBLIC FUNCTIONS**
+
+### ***static* QhunUnitTest.Wrapper `QhunUnitTest.Wrapper.new(instance)`**
+
+*Description: Creates a new test suite.*
+
+*Parameters:*
+- instance (required, ? extends {}) - A wrappable instance object
+
+### **PRIVATE FUNCTIONS**
+
+### number `__unittest_getMethodCallAmount(_, methodName)`
+
+*Description: Get the amount of method calls.*
+
+*Parameters:*
+- First argument is skipped due to LUAs __index metamethod object parameter
+
+### RecordedFunctionCallObject `__unittest_getAllMethodCalls(_, methodName)`
+
+*Description: Get all function calls to the given method name.*
+
+*Parameters:*
+- First argument is skipped due to LUAs __index metamethod object parameter
+
