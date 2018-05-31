@@ -38,6 +38,9 @@ function QhunUnitTest.Wrapper:__index(calledFunctionName, ...)
             returns number
         ]]
         __unittest_getMethodCallAmount = function(_, methodName)
+            if type(self._calledFunctions[methodName]) ~= "table" then
+                return 0
+            end
             return #self._calledFunctions[methodName]
         end,
         -- get all function calls to the given method name

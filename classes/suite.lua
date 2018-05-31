@@ -83,12 +83,28 @@ function QhunUnitTest.Suite:run()
     for _, testClass in pairs(self._classes) do
         local testMethods = {}
 
+        -- get the correct order
+        local order = testClass.class.__methodOrder
+        if type(order) ~= "table" then
+            -- initialise
+            order = {}
+
+            -- get all available functions from the metatable
+            local meta = getmetatable(testClass.class)
+            for method, _ in pairs(meta) do
+                table.insert(order, method)
+            end
+        end
+
         -- get every public method from the class
-        for key, _ in pairs(getmetatable(testClass.class)) do
+        for _, methodName in pairs(order) do
             -- add test methods that does not start with a _ character and
             -- also exclude the constructor, setup and teardown function
-            if key:sub(1, 1) ~= "_" and key ~= "new" and key:sub(1, 5) ~= "setup" and key:sub(1, 8) ~= "teardown" then
-                table.insert(testMethods, {name = key})
+            if
+                methodName:sub(1, 1) ~= "_" and methodName ~= "new" and methodName:sub(1, 5) ~= "setup" and
+                    methodName:sub(1, 8) ~= "teardown"
+             then
+                table.insert(testMethods, {name = methodName})
             end
         end
 

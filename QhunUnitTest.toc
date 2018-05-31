@@ -2,7 +2,7 @@
 ## Title: QhunUnitTest |c0000ff00[Lib, AddonDevelopment]
 ## Author: wartoshika <dev@qhun.de>
 ## Notes: A untit test framework for my addons
-## Version: 1.0
+## Version: 1.1.0
 ## DefaultState: enabled
 
 global.lua
@@ -10,5 +10,9 @@ global.lua
 classes/suite.lua
 classes/base.lua
 classes/wrapper.lua
+
+tests/base.test.lua
+tests/baseAssert.test.lua
+tests/qhunUnitTest.test.lua
 
 core.lua

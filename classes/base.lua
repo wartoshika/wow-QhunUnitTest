@@ -2,11 +2,17 @@ QhunUnitTest.Base = {}
 QhunUnitTest.Base.__index = QhunUnitTest.Base
 
 -- constructor
-function QhunUnitTest.Base.new()
+--[[
+    {
+        methodOrder?: string[]
+    }
+]]
+function QhunUnitTest.Base.new(methodOrder)
     -- private properties
     local instance = {
-        _lastAssertCount = 0,
-        _lastErrorCount = 0
+        __lastAssertCount = 0,
+        __lastErrorCount = 0,
+        __methodOrder = methodOrder
     }
 
     setmetatable(instance, QhunUnitTest.Base)
@@ -35,14 +41,14 @@ end
 
 -- reset the assert counts for the next test run
 function QhunUnitTest.Base:resetAssertCounts()
-    self._lastAssertCount = 0
-    self._lastErrorCount = 0
+    self.__lastAssertCount = 0
+    self.__lastErrorCount = 0
 end
 
 -- get the assert counts for the last test run
 -- returns numberOkAsserts, numberOfErrors
 function QhunUnitTest.Base:getAssertCounts()
-    return self._lastAssertCount, self._lastErrorCount
+    return self.__lastAssertCount, self.__lastErrorCount
 end
 
 -- tests if the given value is an instance of expectedClass
@@ -55,7 +61,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertClassOf(value, expectedClass, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     -- make the assertion
     local assertion = value.__index == expectedClass
@@ -77,7 +83,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertDerivedFrom(value, expectedClass, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     -- make the assertion
     local assertion = getmetatable(getmetatable(value).__index).__index == expectedClass
@@ -99,7 +105,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertTableSize(table, expectedSize, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
     local size = 0
     for _, _ in pairs(table) do
         size = size + 1
@@ -121,7 +127,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertTrue(booleanValue, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
     if type(booleanValue) ~= "boolean" or not booleanValue then
         self:_assertError(message or "The given boolean value was FALSE but expected to be TRUE")
     end
@@ -138,7 +144,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertFalse(booleanValue, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
     if type(booleanValue) ~= "boolean" or booleanValue then
         self:_assertError(message or "The given boolean value was TRUE but expected to be FALSE")
     end
@@ -155,7 +161,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertNil(value, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
     if value ~= nil then
         self:_assertError(message or "The given value was expected to be NIL. Current value is typeof " .. type(value))
     end
@@ -172,7 +178,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertEqual(value1, value2, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
     local match = value1 == value2
     if not match then
         self:_assertError(
@@ -194,6 +200,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertTableSimilar(o1, o2, ignoreMetatable, message)
+    self.__lastAssertCount = self.__lastAssertCount + 1
     local msg = self:_similarTable(o1, o2, ignoreMetatable)
     if msg ~= true then
         self:_assertError(message or msg)
@@ -212,7 +219,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertNotEqual(value1, value2, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
     local match = value1 ~= value2
     if not match then
         self:_assertError(message or "The two values are equal. They should not be")
@@ -230,7 +237,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertTypeof(variable, expectedType, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
     local match = type(variable) == expectedType
     if not match then
         self:_assertError(
@@ -253,7 +260,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertNumberGreaterThanEqual(variable, expectedNumber, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     if type(variable) == "number" then
         if not (variable >= expectedNumber) then
@@ -278,7 +285,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertStringLength(variable, expectedLength, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     if type(variable) == "string" then
         local currentLength = variable:len()
@@ -304,7 +311,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertMethodCalled(wrappedInstance, methodName, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     local actualCalls = wrappedInstance:__unittest_getMethodCallAmount(methodName)
 
@@ -329,7 +336,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertMethodCalledTimes(wrappedInstance, methodName, expectedCalls, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     local actualCalls = wrappedInstance:__unittest_getMethodCallAmount(methodName)
 
@@ -356,7 +363,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertMethodCalledWith(wrappedInstance, methodName, arguments, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     local calls = wrappedInstance:__unittest_getAllMethodCalls(methodName)
 
@@ -380,7 +387,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertMethodNotCalled(wrappedInstance, methodName, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     local actualCalls = wrappedInstance:__unittest_getMethodCallAmount(methodName)
 
@@ -402,7 +409,7 @@ end
     returns boolean
 ]]
 function QhunUnitTest.Base:assertMethodNotCalledWith(wrappedInstance, methodName, arguments, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
 
     local calls = wrappedInstance:__unittest_getAllMethodCalls(methodName)
 
@@ -429,11 +436,16 @@ end
     }
 ]]
 function QhunUnitTest.Base:assertError(callback, arguments, message)
-    self._lastAssertCount = self._lastAssertCount + 1
+    self.__lastAssertCount = self.__lastAssertCount + 1
+
+    -- check if there are arguments given
+    if type(arguments) ~= "table" then
+        arguments = {}
+    end
 
     local status, error = pcall(callback, unpack(arguments))
     if status then
-        self:_assertError(message or error)
+        self:_assertError(message or error or "An error was expected but no error was thrown")
     end
     return status
 end
@@ -442,7 +454,7 @@ end
     PRIVATE FUNCTIONS
 ]]
 function QhunUnitTest.Base:_assertError(message)
-    self._lastErrorCount = self._lastErrorCount + 1
+    self.__lastErrorCount = self.__lastErrorCount + 1
     error(message)
 end
 
